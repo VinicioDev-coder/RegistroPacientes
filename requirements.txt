@@ -3,3 +3,4 @@ flask-limiter
 flask-cors
 qrcode
 PyJWT
+gunicorn
