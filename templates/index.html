@@ -1,0 +1,1645 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Registro de Pacientes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 25%, #16213e 50%, #0f3460 75%, #1a237e 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(120, 119, 198, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(255, 119, 198, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(120, 219, 255, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(25px);
+            border-radius: 32px;
+            box-shadow: 
+                0 40px 80px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(255, 255, 255, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+            padding: 48px;
+            width: 100%;
+            max-width: 1200px;
+            min-height: 700px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            position: relative;
+            z-index: 2;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02));
+            border-radius: 32px;
+            pointer-events: none;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 48px;
+            position: relative;
+            z-index: 3;
+        }
+
+        .header h1 {
+            font-size: 3.5em;
+            margin-bottom: 16px;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, #ffffff 0%, #a78bfa 50%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 40px rgba(167, 139, 250, 0.5);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 20px rgba(167, 139, 250, 0.3);
+            }
+            to {
+                text-shadow: 0 0 30px rgba(167, 139, 250, 0.6);
+            }
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.2em;
+            font-weight: 400;
+            letter-spacing: -0.01em;
+        }
+
+        .form-section {
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 3;
+        }
+
+        .form-section h2 {
+            color: #ffffff;
+            margin-bottom: 32px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            font-size: 1.8em;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            position: relative;
+        }
+
+        .form-section h2::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 80px;
+            height: 2px;
+            background: linear-gradient(90deg, #a78bfa, #3b82f6);
+            border-radius: 2px;
+            box-shadow: 0 0 10px rgba(167, 139, 250, 0.5);
+        }
+
+        .form-group {
+            margin-bottom: 28px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 12px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+            font-size: 1em;
+            letter-spacing: -0.01em;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 20px 24px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            color: #ffffff;
+            font-family: inherit;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #a78bfa;
+            box-shadow: 
+                0 0 0 4px rgba(167, 139, 250, 0.15),
+                0 8px 32px rgba(167, 139, 250, 0.3);
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-2px);
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #a78bfa 0%, #3b82f6 100%);
+            color: white;
+            padding: 20px 40px;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 700;
+            font-family: inherit;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 32px rgba(167, 139, 250, 0.4);
+            letter-spacing: -0.01em;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 48px rgba(167, 139, 250, 0.6);
+            background: linear-gradient(135deg, #8b5cf6 0%, #2563eb 100%);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 24px rgba(167, 139, 250, 0.4);
+        }
+
+        .btn-logout {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            box-shadow: 0 8px 32px rgba(239, 68, 68, 0.4);
+            margin-left: 16px;
+        }
+
+        .btn-logout:hover {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            box-shadow: 0 12px 48px rgba(239, 68, 68, 0.6);
+        }
+
+        .btn-refresh {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            box-shadow: 0 8px 32px rgba(245, 158, 11, 0.4);
+            margin-left: 16px;
+        }
+
+        .btn-refresh:hover {
+            background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+            box-shadow: 0 12px 48px rgba(245, 158, 11, 0.6);
+        }
+
+        .alert {
+            padding: 24px 28px;
+            margin-bottom: 28px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 15px;
+            border: 1px solid transparent;
+            backdrop-filter: blur(15px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .alert::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02));
+            border-radius: 20px;
+            pointer-events: none;
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(22, 163, 74, 0.1));
+            color: #22c55e;
+            border-color: rgba(34, 197, 94, 0.3);
+            box-shadow: 0 8px 32px rgba(34, 197, 94, 0.2);
+        }
+
+        .alert-error {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.1));
+            color: #ef4444;
+            border-color: rgba(239, 68, 68, 0.3);
+            box-shadow: 0 8px 32px rgba(239, 68, 68, 0.2);
+        }
+
+        .alert-warning {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(217, 119, 6, 0.1));
+            color: #f59e0b;
+            border-color: rgba(245, 158, 11, 0.3);
+            box-shadow: 0 8px 32px rgba(245, 158, 11, 0.2);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .patients-section {
+            margin-top: 48px;
+            position: relative;
+            z-index: 3;
+        }
+
+        .patients-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 24px;
+            max-height: 600px;
+            overflow-y: auto;
+            padding: 24px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+        }
+
+        .patient-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(20px);
+        }
+
+        .patient-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02));
+            border-radius: 20px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .patient-card:hover::before {
+            opacity: 1;
+        }
+
+        .patient-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 60px rgba(167, 139, 250, 0.3);
+            border-color: rgba(167, 139, 250, 0.4);
+        }
+
+        .patient-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .patient-card h4 {
+            color: #ffffff;
+            margin-bottom: 8px;
+            font-size: 1.3em;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .patient-card p {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 8px;
+            font-size: 1em;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        .patient-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn-small {
+            padding: 12px 20px;
+            font-size: 14px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-weight: 700;
+            font-family: inherit;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            letter-spacing: -0.01em;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-small::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-small:hover::before {
+            left: 100%;
+        }
+
+        .btn-edit {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            box-shadow: 0 4px 16px rgba(245, 158, 11, 0.4);
+        }
+
+        .btn-edit:hover {
+            background: linear-gradient(135deg, #d97706, #b45309);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(245, 158, 11, 0.6);
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-delete:hover {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.6);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(25px);
+            margin: 5% auto;
+            padding: 48px;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .modal-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02));
+            border-radius: 24px;
+            pointer-events: none;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .close {
+            color: rgba(255, 255, 255, 0.6);
+            float: right;
+            font-size: 32px;
+            font-weight: bold;
+            cursor: pointer;
+            position: absolute;
+            right: 24px;
+            top: 20px;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .close:hover {
+            color: #ffffff;
+            transform: scale(1.1);
+        }
+
+        .modal h3 {
+            color: #ffffff;
+            margin-bottom: 32px;
+            text-align: center;
+            font-size: 1.8em;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            position: relative;
+            z-index: 5;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 48px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 24px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .countdown {
+            font-weight: 700;
+            color: #ef4444;
+            font-size: 1.2em;
+        }
+
+        .user-info {
+            background: linear-gradient(135deg, rgba(167, 139, 250, 0.15), rgba(59, 130, 246, 0.15));
+            padding: 24px 32px;
+            border-radius: 20px;
+            margin-bottom: 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(167, 139, 250, 0.3);
+            backdrop-filter: blur(15px);
+        }
+
+        .user-info span {
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 1.1em;
+        }
+
+        .token-info {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(22, 163, 74, 0.15));
+            padding: 24px 32px;
+            border-radius: 20px;
+            margin-bottom: 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            backdrop-filter: blur(15px);
+        }
+
+        .token-info.warning {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.15));
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+
+        .token-info.expired {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(220, 38, 38, 0.15));
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .token-timer {
+            font-weight: 700;
+            color: #22c55e;
+            font-size: 1.2em;
+        }
+
+        .token-timer.warning {
+            color: #f59e0b;
+        }
+
+        .token-timer.expired {
+            color: #ef4444;
+        }
+
+        .actions-container {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .patients-grid::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        .patients-grid::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+
+        .patients-grid::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #a78bfa, #3b82f6);
+            border-radius: 8px;
+        }
+
+        .patients-grid::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #8b5cf6, #2563eb);
+        }
+
+        .symptom-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, rgba(167, 139, 250, 0.2), rgba(59, 130, 246, 0.2));
+            border: 1px solid rgba(167, 139, 250, 0.3);
+            border-radius: 12px;
+            font-size: 0.9em;
+            font-weight: 600;
+            color: #a78bfa;
+            margin-top: 8px;
+        }
+
+        .patient-id {
+            font-size: 0.85em;
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 32px 24px;
+                margin: 10px;
+                border-radius: 24px;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .header h1 {
+                font-size: 2.5em;
+            }
+
+            .patients-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .actions-container {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+
+            .btn-logout,
+            .btn-refresh {
+                margin-left: 0;
+            }
+
+            .modal-content {
+                margin: 10% auto;
+                padding: 32px 24px;
+                width: 95%;
+            }
+
+            .user-info,
+            .token-info {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .container {
+            animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .patient-card {
+            animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 MediSystem Pro</h1>
+            <p>Sistema Avanzado de Gestión de Pacientes</p>
+        </div>
+
+        <!-- Sección de Login -->
+        <div id="loginSection">
+            <div class="form-section">
+                <h2>🔐 Iniciar Sesión</h2>
+                <div id="loginAlert"></div>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="username">👤 Usuario:</label>
+                        <input type="text" id="username" name="username" required placeholder="Ingresa tu usuario" />
+                    </div>
+                    <div class="form-group">
+                        <label for="password">🔒 Contraseña:</label>
+                        <input type="password" id="password" name="password" required placeholder="Ingresa tu contraseña" />
+                    </div>
+                    <button type="submit" class="btn" id="loginBtn">
+                        ✨ Iniciar Sesión
+                    </button>
+                </form>
+                <div id="blockInfo" class="hidden">
+                    <div class="alert alert-error">
+                        <p>🚫 Has sido bloqueado por múltiples intentos fallidos.</p>
+                        <p>⏰ Tiempo restante: <span id="countdown" class="countdown"></span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección Principal -->
+        <div id="mainSection" class="hidden">
+            <div class="user-info">
+                <span>👋 Bienvenido, <span id="currentUser"></span></span>
+                <div class="actions-container">
+                    <button class="btn btn-refresh" onclick="manualRefreshToken()">
+                        🔄 Renovar Token
+                    </button>
+                    <button class="btn btn-logout" onclick="logout()">
+                        🚪 Cerrar Sesión
+                    </button>
+                </div>
+            </div>
+
+            <div id="tokenInfo" class="token-info">
+                <span>🔑 Token válido por: <span id="tokenTimer" class="token-timer">--:--</span></span>
+                <span id="tokenStatus">✅ Activo</span>
+            </div>
+
+            <!-- Registro de Pacientes -->
+            <div class="form-section">
+                <h2>➕ Registrar Nuevo Paciente</h2>
+                <div id="registerAlert"></div>
+                <form id="registerForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="patientName">👤 Nombre del Paciente:</label>
+                            <input type="text" id="patientName" name="patientName" required 
+                                   pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ ]{2,50}$" 
+                                   title="Solo letras y espacios (2-50 caracteres)"
+                                   placeholder="Nombre completo del paciente" />
+                        </div>
+                        <div class="form-group">
+                            <label for="patientSymptom">🩺 Síntoma/Enfermedad:</label>
+                            <select id="patientSymptom" name="patientSymptom" required>
+                                <option value="">Seleccionar síntoma...</option>
+                                <option value="fiebre">🌡️ Fiebre</option>
+                                <option value="dolor de cabeza">🧠 Dolor de cabeza</option>
+                                <option value="tos">😷 Tos</option>
+                                <option value="dolor de garganta">🗣️ Dolor de garganta</option>
+                                <option value="fatiga">😴 Fatiga</option>
+                                <option value="nauseas">🤢 Náuseas</option>
+                                <option value="vomito">🤮 Vómito</option>
+                                <option value="diarrea">💩 Diarrea</option>
+                                <option value="dolor abdominal">🫄 Dolor abdominal</option>
+                                <option value="mareos">💫 Mareos</option>
+                                <option value="dolor muscular">💪 Dolor muscular</option>
+                                <option value="congestion nasal">👃 Congestión nasal</option>
+                                <option value="perdida del gusto">👅 Pérdida del gusto</option>
+                                <option value="perdida del olfato">👃 Pérdida del olfato</option>
+                                <option value="dificultad respiratoria">🫁 Dificultad respiratoria</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn">🏥 Registrar Paciente</button>
+                </form>
+            </div>
+
+            <!-- Lista de Pacientes -->
+            <div class="patients-section">
+                <h2>📋 Pacientes Registrados</h2>
+                <div id="patientsAlert"></div>
+                <div class="patients-grid" id="patientsList">
+                    <div class="loading">⏳ Cargando pacientes...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal para editar paciente -->
+        <div id="editModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeEditModal()">&times;</span>
+                <h3>✏️ Editar Paciente</h3>
+                <div id="editAlert"></div>
+                <form id="editForm">
+                    <div class="form-group">
+                        <label for="editPatientName">👤 Nombre del Paciente:</label>
+                        <input type="text" id="editPatientName" name="editPatientName" required 
+                               pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ ]{2,50}$" 
+                               title="Solo letras y espacios (2-50 caracteres)"
+                               placeholder="Nombre completo del paciente" />
+                    </div>
+                    <div class="form-group">
+                        <label for="editPatientSymptom">🩺 Síntoma/Enfermedad:</label>
+                        <select id="editPatientSymptom" name="editPatientSymptom" required>
+                            <option value="">Seleccionar síntoma...</option>
+                            <option value="fiebre">🌡️ Fiebre</option>
+                            <option value="dolor de cabeza">🧠 Dolor de cabeza</option>
+                            <option value="tos">😷 Tos</option>
+                            <option value="dolor de garganta">🗣️ Dolor de garganta</option>
+                            <option value="fatiga">😴 Fatiga</option>
+                            <option value="nauseas">🤢 Náuseas</option>
+                            <option value="vomito">🤮 Vómito</option>
+                            <option value="diarrea">💩 Diarrea</option>
+                            <option value="dolor abdominal">🫄 Dolor abdominal</option>
+                            <option value="mareos">💫 Mareos</option>
+                            <option value="dolor muscular">💪 Dolor muscular</option>
+                            <option value="congestion nasal">👃 Congestión nasal</option>
+                            <option value="perdida del gusto">👅 Pérdida del gusto</option>
+                            <option value="perdida del olfato">👃 Pérdida del olfato</option>
+                            <option value="dificultad respiratoria">🫁 Dificultad respiratoria</option>
+                        </select>
+                    </div>
+                    <div style="text-align: center; margin-top: 32px; position: relative; z-index: 5;">
+                        <button type="submit" class="btn">💾 Guardar Cambios</button>
+                        <button type="button" class="btn" onclick="closeEditModal()" 
+                                style="margin-left: 16px; background: linear-gradient(135deg, #64748b, #475569);">
+                            ❌ Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+// Configuración de la API actualizada para Replit
+const API_BASE_URL = window.location.origin; // Usar el origen actual de Replit
+
+// Variables globales
+let currentToken = null;
+let refreshToken = null;
+let currentUser = null;
+let blockCountdown = null;
+let editingPatientId = null;
+let tokenExpirationTime = null;
+let tokenTimerInterval = null;
+let autoRefreshInterval = null;
+let isRefreshing = false;
+
+// Elementos DOM
+const loginSection = document.getElementById("loginSection");
+const mainSection = document.getElementById("mainSection");
+const loginForm = document.getElementById("loginForm");
+const registerForm = document.getElementById("registerForm");
+const editForm = document.getElementById("editForm");
+const editModal = document.getElementById("editModal");
+const loginAlert = document.getElementById("loginAlert");
+const registerAlert = document.getElementById("registerAlert");
+const patientsAlert = document.getElementById("patientsAlert");
+const editAlert = document.getElementById("editAlert");
+const patientsList = document.getElementById("patientsList");
+const blockInfo = document.getElementById("blockInfo");
+const countdown = document.getElementById("countdown");
+const loginBtn = document.getElementById("loginBtn");
+const currentUserSpan = document.getElementById("currentUser");
+const tokenInfo = document.getElementById("tokenInfo");
+const tokenTimer = document.getElementById("tokenTimer");
+const tokenStatus = document.getElementById("tokenStatus");
+
+// Funciones para manejar el almacenamiento seguro de tokens
+function saveSessionData() {
+  try {
+    const sessionData = {
+      accessToken: currentToken,
+      refreshToken: refreshToken,
+      user: currentUser,
+      tokenExpiration: tokenExpirationTime,
+    };
+    // Usar sessionStorage en lugar de localStorage para mayor seguridad en Replit
+    sessionStorage.setItem("sessionData", JSON.stringify(sessionData));
+    console.log("Datos de sesión guardados");
+  } catch (error) {
+    console.error("Error guardando datos de sesión:", error);
+  }
+}
+
+function loadSessionData() {
+  try {
+    const sessionData = sessionStorage.getItem("sessionData");
+    if (sessionData) {
+      const data = JSON.parse(sessionData);
+      console.log("Datos de sesión cargados");
+      return {
+        accessToken: data.accessToken,
+        refreshToken: data.refreshToken,
+        user: data.user,
+        tokenExpiration: data.tokenExpiration,
+      };
+    }
+  } catch (error) {
+    console.error("Error cargando datos de sesión:", error);
+  }
+  return null;
+}
+
+function clearSessionData() {
+  try {
+    sessionStorage.removeItem("sessionData");
+    console.log("Datos de sesión eliminados");
+  } catch (error) {
+    console.error("Error limpiando datos de sesión:", error);
+  }
+}
+
+// Funciones de utilidad
+function showAlert(element, message, type = "error") {
+  const alertClass =
+    type === "info"
+      ? "alert-info"
+      : type === "success"
+      ? "alert-success"
+      : type === "warning"
+      ? "alert-warning"
+      : "alert-danger";
+
+  element.innerHTML = `<div class="alert ${alertClass}">${message}</div>`;
+
+  // Limpiar después de tiempo específico
+  const timeout = type === "info" ? 2000 : 5000;
+  setTimeout(() => {
+    element.innerHTML = "";
+  }, timeout);
+}
+
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  return date.toLocaleString("es-ES");
+}
+
+function formatTime(seconds) {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
+}
+
+function startTokenTimer() {
+  clearInterval(tokenTimerInterval);
+
+  if (!tokenExpirationTime) {
+    tokenTimer.textContent = "--:--";
+    return;
+  }
+
+  tokenTimerInterval = setInterval(() => {
+    const now = Date.now();
+    const timeLeft = Math.max(
+      0,
+      Math.floor((tokenExpirationTime - now) / 1000)
+    );
+
+    tokenTimer.textContent = formatTime(timeLeft);
+
+    // Cambiar estilos según el tiempo restante
+    if (timeLeft <= 0) {
+      tokenInfo.className = "token-info expired";
+      tokenTimer.className = "token-timer expired";
+      tokenStatus.textContent = "Expirado";
+      clearInterval(tokenTimerInterval);
+    } else if (timeLeft <= 60) {
+      tokenInfo.className = "token-info warning";
+      tokenTimer.className = "token-timer warning";
+      tokenStatus.textContent = "Próximo a expirar";
+    } else {
+      tokenInfo.className = "token-info";
+      tokenTimer.className = "token-timer";
+      tokenStatus.textContent = "Activo";
+    }
+  }, 1000);
+}
+
+function setupAutoRefresh() {
+  clearInterval(autoRefreshInterval);
+
+  // Renovar automáticamente 60 segundos antes de que expire
+  autoRefreshInterval = setInterval(async () => {
+    if (tokenExpirationTime && !isRefreshing) {
+      const now = Date.now();
+      const timeLeft = Math.floor((tokenExpirationTime - now) / 1000);
+
+      if (timeLeft <= 60 && timeLeft > 0) {
+        console.log("Renovando token automáticamente...");
+        await autoRefreshToken();
+      }
+    }
+  }, 5000);
+}
+
+function startCountdown(seconds) {
+  clearInterval(blockCountdown);
+  blockInfo.classList.remove("hidden");
+  loginBtn.disabled = true;
+
+  blockCountdown = setInterval(() => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    countdown.textContent = `${minutes}:${remainingSeconds
+      .toString()
+      .padStart(2, "0")}`;
+
+    if (seconds <= 0) {
+      clearInterval(blockCountdown);
+      blockInfo.classList.add("hidden");
+      loginBtn.disabled = false;
+    }
+    seconds--;
+  }, 1000);
+}
+
+// Funciones de autenticación mejoradas
+async function login(username, password) {
+  try {
+    showAlert(loginAlert, "Iniciando sesión...", "info");
+
+    const response = await fetch(`${API_BASE_URL}/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username, password }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      currentToken = data.access_token;
+      refreshToken = data.refresh_token;
+      currentUser = data.user;
+
+      // Configurar tiempo de expiración del token con margen de seguridad
+      tokenExpirationTime = Date.now() + (data.expires_in - 30) * 1000;
+
+      // Guardar datos de sesión
+      saveSessionData();
+
+      currentUserSpan.textContent = currentUser;
+
+      loginSection.classList.add("hidden");
+      mainSection.classList.remove("hidden");
+
+      showAlert(loginAlert, "Inicio de sesión exitoso", "success");
+
+      // Iniciar temporizador del token
+      startTokenTimer();
+      setupAutoRefresh();
+
+      loadPatients();
+    } else {
+      if (
+        data.error === "Usuario bloqueado" ||
+        data.error === "Bloqueado por 5 minutos"
+      ) {
+        const timeRemaining = data.tiempo_restante || 300;
+        startCountdown(timeRemaining);
+        showAlert(
+          loginAlert,
+          `Bloqueado por múltiples intentos fallidos. Tiempo restante: ${Math.ceil(
+            timeRemaining / 60
+          )} minutos`,
+          "error"
+        );
+      } else {
+        showAlert(
+          loginAlert,
+          data.error +
+            (data.intentos_restantes
+              ? ` (Intentos restantes: ${data.intentos_restantes})`
+              : ""),
+          "error"
+        );
+      }
+    }
+  } catch (error) {
+    console.error("Error en login:", error);
+    showAlert(loginAlert, "Error de conexión con el servidor", "error");
+  }
+}
+
+async function autoRefreshToken() {
+  if (isRefreshing) {
+    console.log("Ya se está renovando el token...");
+    return false;
+  }
+
+  isRefreshing = true;
+
+  try {
+    if (!refreshToken) {
+      console.error("No hay refresh token disponible");
+      return false;
+    }
+
+    console.log("Intentando renovar token...");
+
+    const response = await fetch(`${API_BASE_URL}/refresh`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ refresh_token: refreshToken }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+
+      // Actualizar token y tiempo de expiración
+      currentToken = data.access_token;
+      tokenExpirationTime = Date.now() + (data.expires_in - 30) * 1000;
+
+      // Actualizar refresh token si viene uno nuevo
+      if (data.refresh_token) {
+        refreshToken = data.refresh_token;
+      }
+
+      // Guardar datos actualizados
+      saveSessionData();
+
+      console.log("Token renovado exitosamente");
+      startTokenTimer();
+
+      return true;
+    } else {
+      console.error("Error renovando token:", response.status);
+      const errorData = await response.json();
+      console.error("Error details:", errorData);
+
+      // Si el refresh token también expiró, cerrar sesión
+      if (response.status === 401 || response.status === 422) {
+        console.log("Refresh token expirado, cerrando sesión...");
+        await logout();
+      }
+
+      return false;
+    }
+  } catch (error) {
+    console.error("Error en autoRefreshToken:", error);
+    return false;
+  } finally {
+    isRefreshing = false;
+  }
+}
+
+async function manualRefreshToken() {
+  try {
+    const success = await autoRefreshToken();
+    if (success) {
+      showAlert(registerAlert, "Token renovado exitosamente", "success");
+    } else {
+      showAlert(registerAlert, "Error renovando token", "error");
+    }
+  } catch (error) {
+    showAlert(
+      registerAlert,
+      "Error renovando token manualmente",
+      "error"
+    );
+  }
+}
+
+async function logout() {
+  try {
+    if (currentToken) {
+      await fetch(`${API_BASE_URL}/logout`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${currentToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ refresh_token: refreshToken }),
+      });
+    }
+  } catch (error) {
+    console.error("Error al cerrar sesión:", error);
+  }
+
+  // Limpiar intervalos
+  clearInterval(tokenTimerInterval);
+  clearInterval(autoRefreshInterval);
+
+  // Limpiar datos de sesión
+  clearSessionData();
+
+  // Limpiar variables
+  currentToken = null;
+  refreshToken = null;
+  currentUser = null;
+  tokenExpirationTime = null;
+  isRefreshing = false;
+
+  loginSection.classList.remove("hidden");
+  mainSection.classList.add("hidden");
+
+  loginForm.reset();
+  registerForm.reset();
+  loginAlert.innerHTML = "";
+  registerAlert.innerHTML = "";
+  patientsAlert.innerHTML = "";
+
+  // Resetear timer
+  tokenTimer.textContent = "--:--";
+  tokenStatus.textContent = "Desconectado";
+  tokenInfo.className = "token-info";
+}
+
+// Función para restaurar sesión
+async function restoreSession(sessionData) {
+  try {
+    currentToken = sessionData.accessToken;
+    refreshToken = sessionData.refreshToken;
+    currentUser = sessionData.user;
+    tokenExpirationTime = sessionData.tokenExpiration;
+
+    // Verificar si el token sigue siendo válido
+    const now = Date.now();
+    const timeLeft = Math.floor((tokenExpirationTime - now) / 1000);
+
+    if (timeLeft <= 0) {
+      console.log("Token expirado, intentando renovar...");
+      const refreshed = await autoRefreshToken();
+      if (!refreshed) {
+        console.log("No se pudo renovar el token, cerrando sesión...");
+        await logout();
+        return false;
+      }
+    }
+
+    // Restaurar interfaz
+    currentUserSpan.textContent = currentUser;
+    loginSection.classList.add("hidden");
+    mainSection.classList.remove("hidden");
+
+    // Iniciar temporizadores
+    startTokenTimer();
+    setupAutoRefresh();
+
+    // Cargar pacientes
+    loadPatients();
+
+    console.log("Sesión restaurada exitosamente");
+    return true;
+  } catch (error) {
+    console.error("Error restaurando sesión:", error);
+    await logout();
+    return false;
+  }
+}
+
+// Función mejorada para peticiones autenticadas
+async function makeAuthenticatedRequest(url, options = {}) {
+  const makeRequest = async (token) => {
+    const headers = {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+      ...options.headers,
+    };
+
+    return await fetch(url, {
+      ...options,
+      headers,
+    });
+  };
+
+  try {
+    // Verificar si el token está próximo a expirar ANTES de hacer la petición
+    if (tokenExpirationTime) {
+      const now = Date.now();
+      const timeLeft = Math.floor((tokenExpirationTime - now) / 1000);
+
+      if (timeLeft <= 30) {
+        console.log(
+          "Token próximo a expirar, renovando antes de la petición..."
+        );
+        const refreshed = await autoRefreshToken();
+        if (!refreshed) {
+          console.error("No se pudo renovar el token");
+          await logout();
+          return null;
+        }
+      }
+    }
+
+    let response = await makeRequest(currentToken);
+
+    // Si el token expiró (401), intentar renovar UNA SOLA VEZ
+    if (response.status === 401) {
+      console.log(
+        "Token expirado durante la petición, intentando renovar..."
+      );
+
+      const refreshed = await autoRefreshToken();
+
+      if (refreshed) {
+        console.log("Token renovado, repitiendo petición...");
+        response = await makeRequest(currentToken);
+      } else {
+        console.error("No se pudo renovar el token, cerrando sesión");
+        showAlert(
+          patientsAlert,
+          "Sesión expirada, redirigiendo al login...",
+          "error"
+        );
+        setTimeout(() => logout(), 2000);
+        return null;
+      }
+    }
+
+    return response;
+  } catch (error) {
+    console.error("Error en makeAuthenticatedRequest:", error);
+    showAlert(
+      patientsAlert,
+      "Error de conexión con el servidor",
+      "error"
+    );
+    throw error;
+  }
+}
+
+// Funciones de API mejoradas
+async function registerPatient(name, symptom) {
+  if (!currentToken) {
+    showAlert(
+      registerAlert,
+      "Debes iniciar sesión para registrar pacientes",
+      "error"
+    );
+    return;
+  }
+
+  try {
+    showAlert(registerAlert, "Registrando paciente...", "info");
+
+    const response = await makeAuthenticatedRequest(
+      `${API_BASE_URL}/registro`,
+      {
+        method: "POST",
+        body: JSON.stringify({ nombre: name, sintoma: symptom }),
+      }
+    );
+
+    if (response && response.ok) {
+      const data = await response.json();
+      showAlert(registerAlert, data.mensaje, "success");
+      registerForm.reset();
+      loadPatients();
+    } else if (response) {
+      const data = await response.json();
+      showAlert(
+        registerAlert,
+        data.error +
+          (data.detalles ? ": " + data.detalles.join(", ") : ""),
+        "error"
+      );
+    }
+  } catch (error) {
+    console.error("Error en registerPatient:", error);
+    showAlert(
+      registerAlert,
+      "Error de conexión con el servidor",
+      "error"
+    );
+  }
+}
+
+async function editPatient(id, name, symptom) {
+  try {
+    showAlert(editAlert, "Actualizando paciente...", "info");
+
+    const response = await makeAuthenticatedRequest(
+      `${API_BASE_URL}/pacientes/${id}`,
+      {
+        method: "PUT",
+        body: JSON.stringify({ nombre: name, sintoma: symptom }),
+      }
+    );
+
+    if (response && response.ok) {
+      const data = await response.json();
+      showAlert(editAlert, data.mensaje, "success");
+      setTimeout(() => {
+        closeEditModal();
+        loadPatients();
+      }, 1500);
+    } else if (response) {
+      const data = await response.json();
+      showAlert(
+        editAlert,
+        data.error +
+          (data.detalles ? ": " + data.detalles.join(", ") : ""),
+        "error"
+      );
+    }
+  } catch (error) {
+    console.error("Error en editPatient:", error);
+    showAlert(editAlert, "Error de conexión con el servidor", "error");
+  }
+}
+
+async function deletePatient(id, patientName) {
+  if (
+    !confirm(
+      `¿Estás seguro de que quieres eliminar al paciente ${patientName}?`
+    )
+  ) {
+    return;
+  }
+
+  try {
+    showAlert(patientsAlert, "Eliminando paciente...", "info");
+
+    const response = await makeAuthenticatedRequest(
+      `${API_BASE_URL}/pacientes/${id}`,
+      {
+        method: "DELETE",
+      }
+    );
+
+    if (response && response.ok) {
+      const data = await response.json();
+      showAlert(patientsAlert, data.mensaje, "success");
+      loadPatients();
+    } else if (response) {
+      const data = await response.json();
+      showAlert(patientsAlert, data.error, "error");
+    }
+  } catch (error) {
+    console.error("Error en deletePatient:", error);
+    showAlert(
+      patientsAlert,
+      "Error de conexión con el servidor",
+      "error"
+    );
+  }
+}
+
+async function loadPatients() {
+  try {
+    patientsList.innerHTML =
+      '<div class="loading">Cargando pacientes...</div>';
+
+    const response = await makeAuthenticatedRequest(
+      `${API_BASE_URL}/pacientes`
+    );
+
+    if (response && response.ok) {
+      const data = await response.json();
+      displayPatients(data.pacientes);
+    } else if (response) {
+      const data = await response.json();
+      if (data.error === "Acceso denegado") {
+        showAlert(
+          patientsAlert,
+          "No tienes permisos para ver la lista completa de pacientes",
+          "warning"
+        );
+        patientsList.innerHTML =
+          '<div class="loading">Lista disponible solo para administradores</div>';
+      } else {
+        showAlert(patientsAlert, data.error, "error");
+      }
+    }
+  } catch (error) {
+    showAlert(patientsAlert, "Error cargando pacientes", "error");
+    patientsList.innerHTML =
+      '<div class="loading">Error al cargar pacientes</div>';
+  }
+}
+
+function displayPatients(patients) {
+  if (!patients || patients.length === 0) {
+    patientsList.innerHTML =
+      '<div class="loading">No hay pacientes registrados</div>';
+    return;
+  }
+
+  // Ordenar por fecha más reciente
+  patients.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+  const patientsHTML = patients
+    .map(
+      (patient) => `
+<div class="patient-item">
+    <div class="patient-actions">
+        <button class="btn-small btn-edit" onclick="openEditModal(${
+          patient.id
+        }, '${patient.nombre}', '${patient.sintoma}')">
+            ✏ Editar
+        </button>
+        <button class="btn-small btn-delete" onclick="deletePatient(${
+          patient.id
+        }, '${patient.nombre}')">
+            🗑 Eliminar
+        </button>
+    </div>
+    <h4>${patient.nombre}</h4>
+    <p><strong>Síntoma:</strong> ${patient.sintoma}</p>
+    <p><strong>Registrado:</strong> ${formatDate(patient.timestamp)}</p>
+    <p><strong>Registrado por:</strong> ${patient.usuario_registro}</p>
+    <p><strong>ID:</strong> ${patient.id}</p>
+</div>
+`
+    )
+    .join("");
+
+  patientsList.innerHTML = patientsHTML;
+}
+
+// Funciones del modal
+function openEditModal(id, name, symptom) {
+  editingPatientId = id;
+  document.getElementById("editPatientName").value = name;
+  document.getElementById("editPatientSymptom").value = symptom;
+  editModal.style.display = "block";
+  editAlert.innerHTML = "";
+}
+
+function closeEditModal() {
+  editModal.style.display = "none";
+  editingPatientId = null;
+  editForm.reset();
+  editAlert.innerHTML = "";
+}
+
+// Event listeners
+loginForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+  await login(username, password);
+});
+
+registerForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const name = document.getElementById("patientName").value;
+  const symptom = document.getElementById("patientSymptom").value;
+  await registerPatient(name, symptom);
+});
+
+editForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const name = document.getElementById("editPatientName").value;
+  const symptom = document.getElementById("editPatientSymptom").value;
+  await editPatient(editingPatientId, name, symptom);
+});
+
+// Cerrar modal al hacer clic fuera de él
+window.onclick = function (event) {
+  if (event.target === editModal) {
+    closeEditModal();
+  }
+};
+
+// Función para verificar el estado del servidor
+async function checkServerStatus() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/health`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.ok) {
+      console.log("Servidor conectado correctamente");
+      return true;
+    } else {
+      console.error("Error en el servidor:", response.status);
+      return false;
+    }
+  } catch (error) {
+    console.error("Error de conexión:", error);
+    showAlert(
+      loginAlert,
+      "Error de conexión con el servidor. Verificando...",
+      "warning"
+    );
+    return false;
+  }
+}
+
+// Inicialización corregida para Replit
+document.addEventListener("DOMContentLoaded", async () => {
+  console.log("Iniciando aplicación...");
+  console.log("URL del servidor:", API_BASE_URL);
+
+  // Verificar estado del servidor
+  const serverOk = await checkServerStatus();
+  
+  if (!serverOk) {
+    showAlert(
+      loginAlert,
+      "Servidor no disponible. Asegúrate de que main.py esté ejecutándose.",
+      "error"
+    );
+    return;
+  }
+
+  // Intentar restaurar sesión existente
+  const sessionData = loadSessionData();
+
+  if (sessionData && sessionData.accessToken) {
+    console.log("Datos de sesión encontrados, intentando restaurar...");
+    const restored = await restoreSession(sessionData);
+
+    if (!restored) {
+      console.log("No se pudo restaurar la sesión");
+      showAlert(
+        loginAlert,
+        "Sesión expirada, inicia sesión nuevamente",
+        "warning"
+      );
+    }
+  } else {
+    console.log("No se encontraron datos de sesión");
+    // Asegurarse de que la interfaz esté en el estado correcto
+    loginSection.classList.remove("hidden");
+    mainSection.classList.add("hidden");
+  }
+});
+    </script>
+  </body>
+</html>

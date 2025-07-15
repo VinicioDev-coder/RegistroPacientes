@@ -1,0 +1,41 @@
+[
+  {
+    "id": 1,
+    "nombre": "Noame Antonio Mejia Guerra",
+    "sintoma": "mareos",
+    "timestamp": "2025-07-14T13:53:06.924274",
+    "ip_address": "127.0.0.1",
+    "hash_session": "d0c533155fbfadc7",
+    "usuario_registro": "admin",
+    "usuario_modificacion": "admin"
+  },
+  {
+    "id": 2,
+    "nombre": "Maybelyn Karolina Ponce Mera",
+    "sintoma": "mareos",
+    "timestamp": "2025-07-14T13:56:09.099623",
+    "ip_address": "127.0.0.1",
+    "hash_session": "50201df12c9eaa42",
+    "usuario_registro": "admin",
+    "usuario_modificacion": "admin"
+  },
+  {
+    "id": 3,
+    "nombre": "Jipson Eduardo Alava Zambrano",
+    "sintoma": "diarrea",
+    "timestamp": "2025-07-14T13:54:41.809553",
+    "ip_address": "127.0.0.1",
+    "hash_session": "0568ba9499d72f5f",
+    "usuario_registro": "admin",
+    "usuario_modificacion": "admin"
+  },
+  {
+    "id": 4,
+    "nombre": "Jonathan David Zambrano",
+    "sintoma": "dolor de garganta",
+    "timestamp": "2025-07-14T13:54:27.308936",
+    "ip_address": "127.0.0.1",
+    "hash_session": "af201ef8b2403534",
+    "usuario_registro": "admin"
+  }
+]
